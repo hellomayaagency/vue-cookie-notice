@@ -1,0 +1,19 @@
+{
+  "name": "maya-vue-cookie-notice",
+  "version": "1.0.0",
+  "description": "Vue component for accepting and rejecting cookies",
+  "main": "src/CookieNotice.vue",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hellomayaagency/vue-cookie-notice.git"
+  },
+  "author": "Jake Gully <jake@maya.agency>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hellomayaagency/vue-cookie-notice/issues"
+  },
+  "homepage": "https://github.com/hellomayaagency/vue-cookie-notice#readme"
+}
