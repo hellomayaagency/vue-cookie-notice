@@ -103,6 +103,8 @@ export default {
       document.body.classList.add(this.bodyAcceptedClass);
       this.handleAccepted();
       this.$emit('accept');
+      const event = new CustomEvent('cookies-accepted');
+      document.body.dispatchEvent(event);
     },
 
     handleAccepted() {
@@ -120,6 +122,8 @@ export default {
       document.body.classList.add(this.bodyRejectedClass);
       this.handleRejected();
       this.$emit('reject');
+      const event = new CustomEvent('cookies-accepted');
+      document.body.dispatchEvent(event);
     },
 
     handleRejected() {
