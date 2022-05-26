@@ -1,6 +1,6 @@
 {
   "name": "maya-cookie-notice-vue",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Vue component for accepting and rejecting cookies",
   "main": "src/CookieNotice.vue",
   "scripts": {

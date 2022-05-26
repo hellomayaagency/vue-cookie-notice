@@ -223,7 +223,11 @@ export default {
     },
 
     rejectAll() {
-      this.setCookie('');
+      this.setCookie();
+      this.handleRejectedPreferenceAll();
+      this.handleRejectedStatisticAll();
+      this.handleRejectedMarketingAll();
+      this.hideDialog();
     },
 
     handleAcceptedPreferenceAll() {
