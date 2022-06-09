@@ -43,7 +43,7 @@
     <div :class="btnWrapperClass">
       <template v-if="showOptions">
         <button @click.prevent="rejectAll" :class="rejectBtnClass">{{ rejectBtnText }}</button>
-        <button @click.prevent="saveOptions" :class="saveBtnClass">{{ saveBtnText }}</button>
+        <button @click.prevent="onSaveOptions" :class="saveBtnClass">{{ saveBtnText }}</button>
       </template>
       <button v-else @click.prevent="showOptions = !showOptions" :class="optionsBtnClass">
         {{ optionsBtnText }}
@@ -69,6 +69,7 @@ export default {
         preferenceCookies: true,
         statisticCookies: true,
         marketingCookies: true,
+        consent: null,
       },
     };
   },
@@ -165,7 +166,7 @@ export default {
   },
 
   created() {
-    this.getCookie();
+    this.loadCookie();
 
     document.body.addEventListener('click', (event) => {
       if (event.target.matches(this.resetSelector)) {
@@ -177,24 +178,35 @@ export default {
       }
     });
 
-    if (!this.cookieSet) {
-      this.showDialog();
+    if (this.cookieValue.consent !== 'implicit' && this.cookieValue.consent !== 'explicit') {
       window.addEventListener('scroll', this.implicitConsent);
+    }
+
+    if (this.cookieValue.consent !== 'explicit') {
+      this.showDialog();
       return;
     }
 
-    this.handleChoices();
+    this.handleOptions();
   },
 
   methods: {
+    /**
+     * User has implied consent by scrolling down the page.
+     */
     implicitConsent() {
+      this.cookieValue.consent = 'implicit';
       this.handleAcceptedPreferenceAll();
       this.handleAcceptedStatisticAll();
       this.handleAcceptedMarketingAll();
+      this.saveCookie();
       window.removeEventListener('scroll', this.implicitConsent);
     },
 
-    handleChoices() {
+    /**
+     * Take the appropriate actions based on current cookieValue
+     */
+    handleOptions() {
       if (this.cookieValue.preferenceCookies) {
         this.handleAcceptedPreferenceAll();
       } else {
@@ -214,22 +226,35 @@ export default {
       }
     },
 
+    /**
+     * User has explicitly accepted all cookies
+     */
     userAcceptAll() {
-      this.setCookie();
+      this.cookieValue.consent = 'explicit';
+      this.saveCookie();
       this.handleAcceptedPreferenceAll();
       this.handleAcceptedStatisticAll();
       this.handleAcceptedMarketingAll();
       this.hideDialog();
     },
 
+    /**
+     * User has explicitly rejected all cookies
+     */
     rejectAll() {
-      this.setCookie();
+      this.cookieValue.consent = 'explicit';
+      this.saveCookie();
       this.handleRejectedPreferenceAll();
       this.handleRejectedStatisticAll();
       this.handleRejectedMarketingAll();
       this.hideDialog();
     },
 
+    /**
+     * Handle the preference cookies being accepted.
+     *
+     * This will call handleAcceptedPreference in which actions may be taken
+     */
     handleAcceptedPreferenceAll() {
       this.cookieValue.preferenceCookies = true;
       document.body.classList.remove(this.bodyPreferenceRejectedClass);
@@ -240,11 +265,18 @@ export default {
       document.body.dispatchEvent(event);
     },
 
+    /**
+     * Handle business logic after preference cookes have been accepted
+     */
     handleAcceptedPreference() {
       // Extend this to implement your own logic
-      // when preference cookies are accepted
     },
 
+    /**
+     * Handle the Statistic cookies being accepted.
+     *
+     * This will call handleAcceptedStatistic in which actions may be taken
+     */
     handleAcceptedStatisticAll() {
       this.cookieValue.statisticCookies = true;
       document.body.classList.remove(this.bodyStatisticRejectedClass);
@@ -255,11 +287,18 @@ export default {
       document.body.dispatchEvent(event);
     },
 
+    /**
+     * Handle business logic after statistic cookes have been accepted
+     */
     handleAcceptedStatistic() {
       // Extend this to implement your own logic
-      // when statistic cookies are accepted
     },
 
+    /**
+     * Handle the Marketing cookies being accepted.
+     *
+     * This will call handleAcceptedMarketing in which actions may be taken
+     */
     handleAcceptedMarketingAll() {
       this.cookieValue.marketingCookies = true;
       document.body.classList.remove(this.bodyMarketingRejectedClass);
@@ -270,17 +309,18 @@ export default {
       document.body.dispatchEvent(event);
     },
 
+    /**
+     * Handle business logic after marketing cookes have been accepted
+     */
     handleAcceptedMarketing() {
       // Extend this to implement your own logic
-      // when marketing cookies are accepted
     },
 
-    userRejects() {
-      this.setCookie('deny');
-      this.handleRejectedAll();
-      this.hideDialog();
-    },
-
+    /**
+     * Handle the preference cookies being rejected.
+     *
+     * This will call handleRejectedPreference in which actions may be taken
+     */
     handleRejectedPreferenceAll() {
       this.cookieValue.preferenceCookies = false;
       document.body.classList.remove(this.bodyPreferenceAcceptedClass);
@@ -291,11 +331,18 @@ export default {
       document.body.dispatchEvent(event);
     },
 
+    /**
+     * Handle business logic after preference cookes have been rejected
+     */
     handleRejectedPreference() {
       // Extend this to implement your own logic
-      // when preference cookies are rejected
     },
 
+    /**
+     * Handle the Statistic cookies being rejected.
+     *
+     * This will call handleRejectedStatistic in which actions may be taken
+     */
     handleRejectedStatisticAll() {
       this.cookieValue.statisticCookies = false;
       document.body.classList.remove(this.bodyStatisticAcceptedClass);
@@ -306,11 +353,18 @@ export default {
       document.body.dispatchEvent(event);
     },
 
+    /**
+     * Handle business logic after statistic cookes have been rejected
+     */
     handleRejectedStatistic() {
       // Extend this to implement your own logic
-      // when statistic cookies are rejected
     },
 
+    /**
+     * Handle the Marketing cookies being rejected.
+     *
+     * This will call handleRejectedMarketing in which actions may be taken
+     */
     handleRejectedMarketingAll() {
       this.cookieValue.marketingCookies = false;
       document.body.classList.remove(this.bodyMarketingAcceptedClass);
@@ -321,18 +375,31 @@ export default {
       document.body.dispatchEvent(event);
     },
 
+    /**
+     * Handle business logic after marketing cookes have been rejected
+     */
     handleRejectedMarketing() {
       // Extend this to implement your own logic
-      // when marketing cookies are rejected
     },
 
-    setCookie() {
+    /**
+     * Store the cookieValue in the browser's cookies
+     */
+    saveCookie() {
       Cookies.set(this.cookieName, JSON.stringify(this.cookieValue));
       this.cookieSet = true;
     },
 
-    getCookie() {
+    /**
+     * Get cookieValue from the browser's cookies
+     */
+    loadCookie() {
       let value = Cookies.get(this.cookieName);
+
+      if (!value) {
+        this.cookieSet = false;
+        return;
+      }
 
       try {
         value = JSON.parse(value);
@@ -340,32 +407,48 @@ export default {
         this.cookieValue.preferenceCookies = value.preferenceCookies;
         this.cookieValue.statisticCookies = value.statisticCookies;
         this.cookieValue.marketingCookies = value.marketingCookies;
+        this.cookieValue.consent = value.consent;
       } catch (e) {
         this.cookieSet = false;
       }
-
-      return this.cookieValue;
     },
 
+    /**
+     * Remove the cookieValue from the browser's cookies
+     *
+     * This will cause the CookieNotice to be shown on next page load
+     */
     removeCookie() {
       Cookies.remove(this.cookieName);
     },
 
-    saveOptions() {
-      this.handleChoices();
-      this.setCookie();
+    /**
+     * Handle clicking the save button on the dialog
+     */
+    onSaveOptions() {
+      this.handleOptions();
+      this.saveCookie();
       this.hideDialog();
     },
 
+    /**
+     * Remove the cookie and open the dialog
+     */
     showDialog() {
       this.removeCookie();
       this.showDialog();
     },
 
+    /**
+     * Show the dialog
+     */
     showDialog() {
       this.show = true;
     },
 
+    /**
+     * Hide the dialog
+     */
     hideDialog() {
       this.show = false;
     },
