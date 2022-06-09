@@ -231,10 +231,10 @@ export default {
      */
     userAcceptAll() {
       this.cookieValue.consent = 'explicit';
-      this.saveCookie();
       this.handleAcceptedPreferenceAll();
       this.handleAcceptedStatisticAll();
       this.handleAcceptedMarketingAll();
+      this.saveCookie();
       this.hideDialog();
     },
 
@@ -243,10 +243,10 @@ export default {
      */
     rejectAll() {
       this.cookieValue.consent = 'explicit';
-      this.saveCookie();
       this.handleRejectedPreferenceAll();
       this.handleRejectedStatisticAll();
       this.handleRejectedMarketingAll();
+      this.saveCookie();
       this.hideDialog();
     },
 
