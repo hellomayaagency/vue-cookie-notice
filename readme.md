@@ -164,3 +164,9 @@ You can use the following slots to provide extra text.
   </template>
 </cookie-notice>
 ```
+
+# Development
+
+To compile before distribution, run `./compile`. This will use `vue-compile` to convert the TS to JS.
+
+Note: this does strip out the type information so a better solution should be found.

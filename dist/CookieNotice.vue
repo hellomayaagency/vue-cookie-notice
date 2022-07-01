@@ -1,163 +1,161 @@
-<template>
-  <div :class="wrapperClasses" v-if="show">
-    <div v-if="showOptions">
-      <div>
-        <slot name="options-text" />
+<template>  
+    <div :class="wrapperClasses" v-if="show">
+      <div v-if="showOptions">
+        <div>
+          <slot name="options-text" />
+        </div>
+  
+        <div>
+          <label :class="labelClass">
+            <input type="checkbox" checked disabled />
+            Required cookies
+          </label>
+          <slot name="required-cookies-description" />
+        </div>
+  
+        <div v-if="preferenceCookies">
+          <label :class="labelClass">
+            <input type="checkbox" v-model="cookieValue.preferenceCookies" />
+            Allow preference cookies
+          </label>
+          <slot name="preference-cookies-description" />
+        </div>
+  
+        <div v-if="statisticCookies">
+          <label :class="labelClass">
+            <input type="checkbox" v-model="cookieValue.statisticCookies" />
+            Allow statistics cookies
+          </label>
+          <slot name="statistics-cookies-description" />
+        </div>
+  
+        <div v-if="marketingCookies">
+          <label :class="labelClass">
+            <input type="checkbox" v-model="cookieValue.marketingCookies" />
+            Allow marketing cookies
+          </label>
+          <slot name="marketing-cookies-description" />
+        </div>
       </div>
-
-      <div>
-        <label :class="labelClass">
-          <input type="checkbox" checked disabled />
-          Required cookies
-        </label>
-        <slot name="required-cookies-description" />
-      </div>
-
-      <div v-if="preferenceCookies">
-        <label :class="labelClass">
-          <input type="checkbox" v-model="cookieValue.preferenceCookies" />
-          Allow preference cookies
-        </label>
-        <slot name="preference-cookies-description" />
-      </div>
-
-      <div v-if="statisticCookies">
-        <label :class="labelClass">
-          <input type="checkbox" v-model="cookieValue.statisticCookies" />
-          Allow statistics cookies
-        </label>
-        <slot name="statistics-cookies-description" />
-      </div>
-
-      <div v-if="marketingCookies">
-        <label :class="labelClass">
-          <input type="checkbox" v-model="cookieValue.marketingCookies" />
-          Allow marketing cookies
-        </label>
-        <slot name="marketing-cookies-description" />
+  
+      <slot v-else />
+  
+      <div :class="btnWrapperClasses">
+        <template v-if="showOptions">
+          <button @click.prevent="rejectAll" :class="rejectBtnClass">{{ rejectBtnText }}</button>
+          <button @click.prevent="onSaveOptions" :class="saveBtnClass">{{ saveBtnText }}</button>
+        </template>
+        <button v-else @click.prevent="showOptions = !showOptions" :class="optionsBtnClass">
+          {{ optionsBtnText }}
+        </button>
+        <button type="button" @click.prevent="userAcceptAll" :class="acceptBtnClass">
+          {{ acceptBtnText }}
+        </button>
       </div>
     </div>
-
-    <slot v-else />
-
-    <div :class="btnWrapperClasses">
-      <template v-if="showOptions">
-        <button @click.prevent="rejectAll" :class="rejectBtnClass">{{ rejectBtnText }}</button>
-        <button @click.prevent="onSaveOptions" :class="saveBtnClass">{{ saveBtnText }}</button>
-      </template>
-      <button v-else @click.prevent="showOptions = !showOptions" :class="optionsBtnClass">
-        {{ optionsBtnText }}
-      </button>
-      <button type="button" @click.prevent="userAcceptAll" :class="acceptBtnClass">
-        {{ acceptBtnText }}
-      </button>
-    </div>
-  </div>
 </template>
 
-<script lang="ts">
+<script>
 import Cookies from 'js-cookie';
-import { defineComponent, ref } from 'vue';
-import { CookieValue } from './CookieValue';
-
+import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     preferenceCookies: {
       type: Boolean,
-      default: true,
+      default: true
     },
     statisticCookies: {
       type: Boolean,
-      default: true,
+      default: true
     },
     marketingCookies: {
       type: Boolean,
-      default: true,
+      default: true
     },
     labelClass: {
       type: String,
-      default: 'font-bold',
+      default: 'font-bold'
     },
     wrapperClass: {
       type: String,
-      default: 'fixed right-5 bottom-5 rounded bg-white shadow z-50 p-5 max-w-sm text-black',
+      default: 'fixed right-5 bottom-5 rounded bg-white shadow z-50 p-5 max-w-sm text-black'
     },
     optionsWrapperClass: {
       type: String,
-      default: null,
+      default: null
     },
     btnWrapperClass: {
       type: String,
-      default: 'flex gap-2.5 mt-3',
+      default: 'flex gap-2.5 mt-3'
     },
     optionsBtnWrapperClass: {
       type: String,
-      default: null,
+      default: null
     },
     acceptBtnClass: {
       type: String,
-      default: 'flex-1 rounded bg-black text-white px-5 py-2.5 whitespace-nowrap',
+      default: 'flex-1 rounded bg-black text-white px-5 py-2.5 whitespace-nowrap'
     },
     acceptBtnText: {
       type: String,
-      default: 'Accept',
+      default: 'Accept'
     },
     rejectBtnClass: {
       type: String,
-      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap',
+      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap'
     },
     rejectBtnText: {
       type: String,
-      default: 'Reject',
+      default: 'Reject'
     },
     optionsBtnClass: {
       type: String,
-      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap',
+      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap'
     },
     optionsBtnText: {
       type: String,
-      default: 'Options',
+      default: 'Options'
     },
     saveBtnClass: {
       type: String,
-      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap',
+      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap'
     },
     saveBtnText: {
       type: String,
-      default: 'Save',
+      default: 'Save'
     },
     cookieName: {
       type: String,
-      default: 'cookie-consent',
+      default: 'cookie-consent'
     },
     resetSelector: {
       type: String,
-      default: '.show-cookie-notice',
+      default: '.show-cookie-notice'
     },
     bodyPreferenceAcceptedClass: {
       type: String,
-      default: 'preference-cookies-accepted',
+      default: 'preference-cookies-accepted'
     },
     bodyPreferenceRejectedClass: {
       type: String,
-      default: 'preference-cookies-rejected',
+      default: 'preference-cookies-rejected'
     },
     bodyStatisticAcceptedClass: {
       type: String,
-      default: 'statistic-cookies-accepted',
+      default: 'statistic-cookies-accepted'
     },
     bodyStatisticRejectedClass: {
       type: String,
-      default: 'statistic-cookies-rejected',
+      default: 'statistic-cookies-rejected'
     },
     bodyMarketingAcceptedClass: {
       type: String,
-      default: 'marketing-cookies-accepted',
+      default: 'marketing-cookies-accepted'
     },
     bodyMarketingRejectedClass: {
       type: String,
-      default: 'marketing-cookies-rejected',
-    },
+      default: 'marketing-cookies-rejected'
+    }
   },
 
   data() {
@@ -169,8 +167,8 @@ export default defineComponent({
         preferenceCookies: true,
         statisticCookies: true,
         marketingCookies: true,
-        consent: null,
-      } as CookieValue,
+        consent: null
+      }
     };
   },
 
@@ -189,19 +187,18 @@ export default defineComponent({
       }
 
       return this.btnWrapperClass;
-    },
+    }
+
   },
 
   created() {
     this.loadCookie();
-
-    document.body.addEventListener('click', (event: MouseEvent) => {
-      const target = event.target as Element;
+    document.body.addEventListener('click', event => {
+      const target = event.target;
 
       if (target.matches(this.resetSelector)) {
         event.preventDefault();
         event.stopImmediatePropagation();
-
         this.removeCookie();
         this.showDialog();
       }
@@ -296,8 +293,7 @@ export default defineComponent({
     /**
      * Handle business logic after preference cookes have been accepted
      */
-    handleAcceptedPreference() {
-      // Extend this to implement your own logic
+    handleAcceptedPreference() {// Extend this to implement your own logic
     },
 
     /**
@@ -318,8 +314,7 @@ export default defineComponent({
     /**
      * Handle business logic after statistic cookes have been accepted
      */
-    handleAcceptedStatistic() {
-      // Extend this to implement your own logic
+    handleAcceptedStatistic() {// Extend this to implement your own logic
     },
 
     /**
@@ -340,8 +335,7 @@ export default defineComponent({
     /**
      * Handle business logic after marketing cookes have been accepted
      */
-    handleAcceptedMarketing() {
-      // Extend this to implement your own logic
+    handleAcceptedMarketing() {// Extend this to implement your own logic
     },
 
     /**
@@ -362,8 +356,7 @@ export default defineComponent({
     /**
      * Handle business logic after preference cookes have been rejected
      */
-    handleRejectedPreference() {
-      // Extend this to implement your own logic
+    handleRejectedPreference() {// Extend this to implement your own logic
     },
 
     /**
@@ -384,8 +377,7 @@ export default defineComponent({
     /**
      * Handle business logic after statistic cookes have been rejected
      */
-    handleRejectedStatistic() {
-      // Extend this to implement your own logic
+    handleRejectedStatistic() {// Extend this to implement your own logic
     },
 
     /**
@@ -406,8 +398,7 @@ export default defineComponent({
     /**
      * Handle business logic after marketing cookes have been rejected
      */
-    handleRejectedMarketing() {
-      // Extend this to implement your own logic
+    handleRejectedMarketing() {// Extend this to implement your own logic
     },
 
     /**
@@ -430,7 +421,7 @@ export default defineComponent({
       }
 
       try {
-        const value = JSON.parse(str_value) as CookieValue;
+        const value = JSON.parse(str_value);
         this.cookieSet = true;
         this.cookieValue.preferenceCookies = value.preferenceCookies;
         this.cookieValue.statisticCookies = value.statisticCookies;
@@ -474,7 +465,8 @@ export default defineComponent({
     hideDialog() {
       console.log('HIDE');
       this.show = false;
-    },
-  },
+    }
+
+  }
 });
 </script>
