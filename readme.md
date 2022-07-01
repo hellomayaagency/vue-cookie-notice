@@ -9,24 +9,24 @@ V3.0.0 introduces TypeScript and Vue3 support. If you need Vue 2 support, use v2
 # Installation
 
 ```shell
-yarn add maya-vue-cookie-notice
+yarn add maya-cookie-notice-vue
 ```
 
 or
 
 ```shell
-npm install --save maya-vue-cookie-notice
+npm install --save maya-cookie-notice-vue
 ```
 
 # Usage
 
-You'll want to extend `maya-vue-cookie-notice' and override whichever handle methods you need.
+You'll want to extend `maya-cookie-notice-vue' and override whichever handle methods you need.
 
 The example below grants consent for analytics storage when statistic cookies are enabled.
 
 ```vue
 <script lang="ts">
-import CookieNotice from 'maya-vue-cookie-notice';
+import CookieNotice from 'maya-cookie-notice-vue';
 
 export default {
   extends: CookieNotice,
