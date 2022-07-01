@@ -94,6 +94,8 @@ The user can then choose to accept all the cookies or use the options button to 
 - label-class
 - wrapper-class
 - btn-wrapper-class
+- options-wrapper-class
+- options-btn-wrapper-class
 - accept-btn-class
 - accept-btn-text
 - reject-btn-class

@@ -1,5 +1,5 @@
 <template>
-  <div :class="wrapperClass" v-if="show">
+  <div :class="wrapperClasses" v-if="show">
     <div v-if="showOptions">
       <div>
         <slot name="options-text" />
@@ -40,7 +40,7 @@
 
     <slot v-else />
 
-    <div :class="btnWrapperClass">
+    <div :class="btnWrapperClasses">
       <template v-if="showOptions">
         <button @click.prevent="rejectAll" :class="rejectBtnClass">{{ rejectBtnText }}</button>
         <button @click.prevent="onSaveOptions" :class="saveBtnClass">{{ saveBtnText }}</button>
@@ -96,9 +96,17 @@ export default defineComponent({
       type: String,
       default: 'fixed right-5 bottom-5 rounded bg-white shadow z-50 p-5 max-w-sm text-black',
     },
+    optionsWrapperClass: {
+      type: String,
+      default: null,
+    },
     btnWrapperClass: {
       type: String,
       default: 'flex gap-2.5 mt-3',
+    },
+    optionsBtnWrapperClass: {
+      type: String,
+      default: null,
     },
     acceptBtnClass: {
       type: String,
@@ -178,6 +186,24 @@ export default defineComponent({
         consent: null,
       },
     };
+  },
+
+  computed: {
+    wrapperClasses() {
+      if (this.optionsWrapperClass && this.showOptions) {
+        return this.optionsWrapperClass;
+      }
+
+      return this.wrapperClass;
+    },
+
+    btnWrapperClasses() {
+      if (this.optionsBtnWrapperClass && this.showOptions) {
+        return this.optionsBtnWrapperClass;
+      }
+
+      return this.btnWrapperClass;
+    },
   },
 
   created() {
