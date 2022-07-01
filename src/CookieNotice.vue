@@ -55,25 +55,26 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Cookies from 'js-cookie';
+import { defineComponent, ref } from 'vue';
+import { CustomWindow } from './CustomWindow';
 
-export default {
-  data() {
-    return {
-      show: false,
-      showOptions: false,
-      consentImplied: false,
-      cookieSet: false,
-      cookieValue: {
-        preferenceCookies: true,
-        statisticCookies: true,
-        marketingCookies: true,
-        consent: null,
-      },
-    };
-  },
+declare let window: CustomWindow;
 
+window.dataLayer = window.dataLayer || [];
+function gtag(command: String, ...parameters: any): void {
+  window.dataLayer.push(command, ...parameters);
+}
+
+interface CookieValue {
+  preferenceCookies: boolean;
+  statisticCookies: boolean;
+  marketingCookies: boolean;
+  consent: string;
+}
+
+export default defineComponent({
   props: {
     preferenceCookies: {
       type: Boolean,
@@ -101,7 +102,7 @@ export default {
     },
     acceptBtnClass: {
       type: String,
-      default: 'flex-1 rounded bg-black text-white px-5 py-2.5',
+      default: 'flex-1 rounded bg-black text-white px-5 py-2.5 whitespace-nowrap',
     },
     acceptBtnText: {
       type: String,
@@ -109,7 +110,7 @@ export default {
     },
     rejectBtnClass: {
       type: String,
-      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black',
+      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap',
     },
     rejectBtnText: {
       type: String,
@@ -117,7 +118,7 @@ export default {
     },
     optionsBtnClass: {
       type: String,
-      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black',
+      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap',
     },
     optionsBtnText: {
       type: String,
@@ -125,7 +126,7 @@ export default {
     },
     saveBtnClass: {
       type: String,
-      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black',
+      default: 'flex-1 rounded border-2 border-black px-5 py-2.5 text-black whitespace-nowrap',
     },
     saveBtnText: {
       type: String,
@@ -165,11 +166,27 @@ export default {
     },
   },
 
+  data() {
+    return {
+      show: false,
+      showOptions: false,
+      cookieSet: false,
+      cookieValue: <CookieValue>{
+        preferenceCookies: true,
+        statisticCookies: true,
+        marketingCookies: true,
+        consent: null,
+      },
+    };
+  },
+
   created() {
     this.loadCookie();
 
-    document.body.addEventListener('click', (event) => {
-      if (event.target.matches(this.resetSelector)) {
+    document.body.addEventListener('click', (event: MouseEvent) => {
+      const target = event.target as Element;
+
+      if (target.matches(this.resetSelector)) {
         event.preventDefault();
         event.stopImmediatePropagation();
 
@@ -184,10 +201,9 @@ export default {
 
     if (this.cookieValue.consent !== 'explicit') {
       this.showDialog();
-      return;
+    } else {
+      this.handleOptions();
     }
-
-    this.handleOptions();
   },
 
   methods: {
@@ -394,15 +410,15 @@ export default {
      * Get cookieValue from the browser's cookies
      */
     loadCookie() {
-      let value = Cookies.get(this.cookieName);
+      const str_value = Cookies.get(this.cookieName);
 
-      if (!value) {
+      if (!str_value) {
         this.cookieSet = false;
         return;
       }
 
       try {
-        value = JSON.parse(value);
+        const value = JSON.parse(str_value) as CookieValue;
         this.cookieSet = true;
         this.cookieValue.preferenceCookies = value.preferenceCookies;
         this.cookieValue.statisticCookies = value.statisticCookies;
@@ -432,26 +448,21 @@ export default {
     },
 
     /**
-     * Remove the cookie and open the dialog
-     */
-    showDialog() {
-      this.removeCookie();
-      this.showDialog();
-    },
-
-    /**
      * Show the dialog
      */
     showDialog() {
+      console.log('show!');
       this.show = true;
+      console.log(this.show);
     },
 
     /**
      * Hide the dialog
      */
     hideDialog() {
+      console.log('HIDE');
       this.show = false;
     },
   },
-};
+});
 </script>

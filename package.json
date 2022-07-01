@@ -1,6 +1,6 @@
 {
   "name": "maya-cookie-notice-vue",
-  "version": "2.0.4",
+  "version": "3.0.0",
   "description": "Vue component for accepting and rejecting cookies",
   "main": "src/CookieNotice.vue",
   "scripts": {
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/hellomayaagency/vue-cookie-notice#readme",
   "dependencies": {
-    "js-cookie": "^3.0.1"
+    "js-cookie": "^3.0.1",
+    "@types/js-cookie": "^3.0.2"
   }
 }

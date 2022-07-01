@@ -2,6 +2,10 @@
 
 A simple vue component to accept/reject cookies.
 
+## Note
+
+V3.0.0 introduces TypeScript and Vue3 support. If you need Vue 2 support, use v2.x.x.
+
 # Installation
 
 ```shell
@@ -18,33 +22,41 @@ npm install --save maya-vue-cookie-notice
 
 You'll want to extend `maya-vue-cookie-notice' and override whichever handle methods you need.
 
+The example below grants consent for analytics storage when statistic cookies are enabled.
+
 ```vue
-<script>
+<script lang="ts">
 import CookieNotice from 'maya-vue-cookie-notice';
 
 export default {
   extends: CookieNotice,
 
   methods: {
-    handleAcceptedPreference() {
-      if (document.querySelector('[src^="https://example.com/script.js"]')) {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'https://example.com/script.js';
-        document.body.append(script);
+    handleAcceptedStatistic() {
+      if (typeof gtag !== 'undefined' && gtag) {
+        gtag('consent', 'update', {
+          analytics_storage: 'granted',
+          wait_for_update: 500,
+          region: ['GB'],
+        });
+      }
+    },
+    handleRejectedStatistic() {
+      if (typeof gtag !== 'undefined' && gtag) {
+        gtag('consent', 'update', {
+          analytics_storage: 'denied',
+          wait_for_update: 0,
+          region: ['GB'],
+        });
       }
     },
 
+    handleAcceptedPreference() {
+      // Preference cookies were accepted
+    },
+
     handleRejectedPreference () {
-      document.getElementById('myThingToRemove').remove();
-    },
-
-    handleAcceptedStatistic() {
-      // Statistics cookies were accepted
-    },
-
-    handleRejectedStatistic() {
-      // Statistics cookies were rejected
+      // Preference cookies were rejected
     },
 
     handleAcceptedMarketing() {
@@ -62,15 +74,12 @@ export default {
 Then include your extended version in your app:
 
 ```js
+import App from './App.vue';
 import CookieNotice from './my-vue-files/CookieNotice.vue';
 
-new Vue({
-  el: '#app',
-
-  components: {
-    CookieNotice,
-  },
-});
+const app = createApp(App);
+app.component('cookie-notice', CookieNotice);
+app.mount('#app');
 ```
 
 When the user scrolls down, that will be taken as implied consent **(your text in the default slot should reflect this)**.
