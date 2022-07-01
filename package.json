@@ -1,8 +1,8 @@
 {
   "name": "maya-cookie-notice-vue",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Vue component for accepting and rejecting cookies",
-  "main": "src/CookieNotice.vue",
+  "main": "dist/CookieNotice.vue",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
